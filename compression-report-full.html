@@ -266,7 +266,7 @@
     table.matrix .total-row td:first-child { background: #f4f6f9; }
     td.cell-strong { font-weight: 600; background: rgba(12,74,143,.06); }
 
-    /* Daily summary matrices — shared column widths so dates line up across arrivals / ramp / departures */
+    /* Daily summary matrices — shared column widths so dates line up across arrivals / departures / ramp */
     .matrix-stack table.matrix {
       table-layout: fixed;
       width: 100%;
@@ -825,36 +825,6 @@
           </div>
         </div>
 
-        <div class="matrix-block ramp-daily-block">
-          <div class="matrix-head ramp-daily">
-            Estimated aircraft on ramp
-            <span class="hint">Sample end-of-day estimate from the same movement model as hourly drill (opening + arrivals − departures + based / other)</span>
-          </div>
-          <div class="table-scroll">
-            <table class="matrix" aria-label="Estimated aircraft on ramp by local day">
-              <colgroup>
-                <col class="mat-col-label" />
-                <col span="10" class="mat-col-day" />
-                <col class="mat-col-total" />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th scope="col">Row</th>
-                  <th>05/21</th><th>05/22</th><th>05/23</th><th>05/24</th><th>05/25</th><th>05/26</th><th>05/27</th>
-                  <th>05/28</th><th>05/29</th><th>05/30</th><th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="ramp-estimate-row" title="Sample estimate per local calendar day">
-                  <td>Estimated aircraft on ramp <span class="ramp-daily-note">(EOD · sample)</span></td>
-                  <td>18</td><td>26</td><td>25</td><td>20</td><td>19</td><td>17</td><td>17</td><td>18</td><td>22</td><td class="cell-strong">27</td>
-                  <td><span class="ramp-daily-note" title="Average over days in view">Avg 21</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
         <div class="matrix-block">
           <div class="matrix-head departure">
             Departures by day
@@ -884,6 +854,36 @@
                   <td>Total departures</td>
                   <td>1</td><td>46</td><td>46</td><td>29</td><td>28</td><td>24</td><td>17</td><td>6</td><td>7</td><td>6</td>
                   <td>230</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="matrix-block ramp-daily-block">
+          <div class="matrix-head ramp-daily">
+            Estimated aircraft on ramp
+            <span class="hint">Sample end-of-day estimate from the same movement model as hourly drill (opening + arrivals − departures + based / other)</span>
+          </div>
+          <div class="table-scroll">
+            <table class="matrix" aria-label="Estimated aircraft on ramp by local day">
+              <colgroup>
+                <col class="mat-col-label" />
+                <col span="10" class="mat-col-day" />
+                <col class="mat-col-total" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th scope="col">Row</th>
+                  <th>05/21</th><th>05/22</th><th>05/23</th><th>05/24</th><th>05/25</th><th>05/26</th><th>05/27</th>
+                  <th>05/28</th><th>05/29</th><th>05/30</th><th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="ramp-estimate-row" title="Sample estimate per local calendar day">
+                  <td>Estimated aircraft on ramp <span class="ramp-daily-note">(EOD · sample)</span></td>
+                  <td>18</td><td>26</td><td>25</td><td>20</td><td>19</td><td>17</td><td>17</td><td>18</td><td>22</td><td class="cell-strong">27</td>
+                  <td><span class="ramp-daily-note" title="Average over days in view">Avg 21</span></td>
                 </tr>
               </tbody>
             </table>
