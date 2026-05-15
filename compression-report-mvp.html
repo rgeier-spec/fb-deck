@@ -24,6 +24,11 @@
       --shadow: 0 1px 3px rgba(26, 40, 71, 0.08);
       --font: "IBM Plex Sans", system-ui, sans-serif;
       --mono: "IBM Plex Mono", ui-monospace, monospace;
+      --atype-heavy: #1e5aa8;
+      --atype-midsize: #2f8f9d;
+      --atype-light: #4a9d5c;
+      --atype-turbo: #8b5bb5;
+      --chart-axis: #c5ced9;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -264,26 +269,101 @@
       padding: 0 16px 12px;
       margin-top: -4px;
     }
-    .hour-grid {
-      display: grid;
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      gap: 4px 6px;
-      padding: 0 16px 16px;
+    .mvp-hourly-stack {
+      padding-bottom: 4px;
     }
-    @media (max-width: 700px) {
-      .hour-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-    }
-    .hour-cell {
-      text-align: center;
-      padding: 6px 2px;
-      border-radius: 6px;
-      background: #f0f4f8;
-      border: 1px solid var(--border);
+
+    .stack-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      padding: 12px 16px 8px;
       font-size: 11px;
+      color: var(--muted);
     }
-    .hour-cell .h { font-weight: 600; color: var(--muted); font-size: 10px; font-family: var(--mono); letter-spacing: -0.02em; }
-    .hour-cell .n { font-size: 13px; font-weight: 600; margin-top: 2px; font-variant-numeric: tabular-nums; }
-    .hour-cell.hot { background: #e8f0fa; border-color: var(--accent); color: var(--accent); }
+    .stack-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .stack-legend i {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .stack-legend .lg-heavy { background: var(--atype-heavy); }
+    .stack-legend .lg-midsize { background: var(--atype-midsize); }
+    .stack-legend .lg-light { background: var(--atype-light); }
+    .stack-legend .lg-turbo { background: var(--atype-turbo); }
+
+    .stack-chart-wrap {
+      padding: 8px 12px 0;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--chart-axis);
+      margin-bottom: 2px;
+    }
+    .stack-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      min-height: 132px;
+      padding: 0 8px 22px;
+      position: relative;
+      min-width: 672px;
+    }
+
+    .stack-caption {
+      font-size: 11px;
+      color: var(--muted);
+      padding: 0 16px 14px;
+      margin: 0;
+    }
+
+    .stack-col {
+      flex: 1 0 10px;
+      min-width: 10px;
+      max-width: 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .stack-bar {
+      width: 100%;
+      display: flex;
+      flex-direction: column-reverse;
+      justify-content: flex-start;
+      border-radius: 3px 3px 0 0;
+      overflow: hidden;
+      min-height: 2px;
+      box-shadow: inset 0 0 0 1px rgba(26, 40, 71, 0.06);
+    }
+    .stack-bar.is-empty {
+      min-height: 4px;
+      background: #e8ecf1;
+      box-shadow: none;
+    }
+    .stack-seg {
+      width: 100%;
+      min-height: 0;
+    }
+    .stack-seg.heavy { background: var(--atype-heavy); }
+    .stack-seg.midsize { background: var(--atype-midsize); }
+    .stack-seg.light { background: var(--atype-light); }
+    .stack-seg.turbo { background: var(--atype-turbo); }
+    .stack-hour-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.1;
+      width: 100%;
+    }
+
+    .drill-layout > .matrix-block {
+      overflow: visible;
+    }
     .footer-meta {
       margin-top: 24px;
       font-size: 11px;
@@ -328,19 +408,19 @@
         <span class="badge mvp">MVP mockup · v1</span>
       </h1>
       <p class="page-sub">
-        First-release slice: arrivals and departures by day with a fixed hourly breakdown for one selected example day. Scoped to trips visible for your FlightBridge login.
+        First-release slice: arrivals and departures by day, plus hourly demand as stacked bars (aircraft-category mix by hour) for a sample selected day.
       </p>
       <div class="mvp-scope" role="note">
         <strong>What ships in v1 (this mockup)</strong>
         <ul>
           <li>Location + date range; always shows both arrivals and departures.</li>
-          <li>Daily totals matrix and hourly counts (single grid layout only).</li>
+          <li>Daily totals matrix plus hourly stacked bar chart by aircraft category.</li>
           <li>One export action (CSV)—PDF, saved views, and extra filters deferred.</li>
         </ul>
         <span class="mvp-defer-strong">Defer to later</span>
         <ul>
-          <li>Movement / aircraft / leg-status / customer filters; stacked bar hourly view.</li>
-          <li>Aircraft mix table under hourly; clickable column drill UX.</li>
+          <li>Movement / aircraft / leg-status / customer filters; optional hour grid layout.</li>
+          <li>Clickable matrix column drill UX (sample day stays static until then).</li>
         </ul>
       </div>
 
@@ -385,7 +465,7 @@
         <div class="matrix-block">
           <div class="matrix-head arrival">
             Arrivals by day
-            <span class="hint">v1 · daily arrivals · hourly example card below</span>
+            <span class="hint">v1 · daily arrivals · stacked hourly chart below</span>
           </div>
           <div class="table-scroll">
             <table class="matrix">
@@ -415,7 +495,7 @@
         <div class="matrix-block">
           <div class="matrix-head departure">
             Departures by day
-            <span class="hint">v1 · daily departures · hourly example card below</span>
+            <span class="hint">v1 · daily departures · stacked hourly chart below</span>
           </div>
           <div class="table-scroll">
             <table class="matrix">
@@ -444,79 +524,281 @@
       </section>
 
       <section class="card" style="margin-top:22px" aria-labelledby="drill-heading">
-        <div class="card-title" id="drill-heading">Hourly view — sample day · May 30, 2026</div>
+        <div class="card-title" id="drill-heading">Stacked hourly — sample day · May 30, 2026</div>
         <p class="drill-summary">
-          MVP shows a static example day beside the matrices. Interactive &ldquo;click a column to drill&rdquo; arrives with a later release.
+          Bars show movements per clock hour stacked by FB aircraft category—same totals as summing hourly segments by hand. MVP uses a fixed example until column drill selects the day dynamically.
         </p>
         <div class="drill-layout">
           <div class="matrix-block">
             <div class="matrix-head arrival">
               Hourly arrivals (local)
-              <span class="hint">21 movements · sample</span>
+              <span class="hint">21 movements · sample · stacked by type</span>
             </div>
-            <div class="hour-grid">
-            <div class="hour-cell"><div class="h">00</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">01</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">02</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">03</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">04</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">05</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">06</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">07</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">08</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">09</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">10</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">11</div><div class="n">0</div></div>
-            <div class="hour-cell hot"><div class="h">12</div><div class="n">3</div></div>
-            <div class="hour-cell hot"><div class="h">13</div><div class="n">4</div></div>
-            <div class="hour-cell hot"><div class="h">14</div><div class="n">4</div></div>
-            <div class="hour-cell hot"><div class="h">15</div><div class="n">3</div></div>
-            <div class="hour-cell hot"><div class="h">16</div><div class="n">3</div></div>
-            <div class="hour-cell hot"><div class="h">17</div><div class="n">2</div></div>
-            <div class="hour-cell hot"><div class="h">18</div><div class="n">2</div></div>
-            <div class="hour-cell"><div class="h">19</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">20</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">21</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">22</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">23</div><div class="n">0</div></div>
+
+            <div class="mvp-hourly-stack">
+
+            <div class="stack-legend">
+            <span><i class="lg-heavy" aria-hidden="true"></i> Heavy jet</span>
+            <span><i class="lg-midsize" aria-hidden="true"></i> Super-midsize</span>
+            <span><i class="lg-light" aria-hidden="true"></i> Light / VLJ</span>
+            <span><i class="lg-turbo" aria-hidden="true"></i> Turboprop</span>
+            </div>
+            <div class="stack-chart-wrap">
+            <div class="stack-chart" role="group" aria-label="Arrivals per hour stacked by aircraft type">
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">00</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">01</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">02</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">03</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">04</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">05</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">06</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">07</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">08</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">09</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">10</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">11</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:90px" title="3 arrivals · airport local">
+            <div class="stack-seg light" style="flex:1"></div>
+            <div class="stack-seg midsize" style="flex:1"></div>
+            <div class="stack-seg heavy" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">12</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:120px" title="4 arrivals · airport local">
+            <div class="stack-seg light" style="flex:1"></div>
+            <div class="stack-seg midsize" style="flex:2"></div>
+            <div class="stack-seg heavy" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">13</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:120px" title="4 arrivals · airport local">
+            <div class="stack-seg light" style="flex:2"></div>
+            <div class="stack-seg heavy" style="flex:1"></div>
+            <div class="stack-seg heavy" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">14</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:90px" title="3 arrivals · airport local">
+            <div class="stack-seg turbo" style="flex:1"></div>
+            <div class="stack-seg heavy" style="flex:1"></div>
+            <div class="stack-seg light" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">15</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:90px" title="3 arrivals · airport local">
+            <div class="stack-seg heavy" style="flex:1"></div>
+            <div class="stack-seg midsize" style="flex:2"></div>
+            </div>
+            <div class="stack-hour-label">16</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:60px" title="2 arrivals · airport local">
+            <div class="stack-seg light" style="flex:1"></div>
+            <div class="stack-seg heavy" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">17</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:60px" title="2 arrivals · airport local">
+            <div class="stack-seg light" style="flex:1"></div>
+            <div class="stack-seg midsize" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">18</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">19</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">20</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">21</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">22</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">23</div>
+            </div>
+            </div>
+            </div>
+            <p class="stack-caption">Bar height = peak hour (<strong>4</strong>) · sample mix.</p>
             </div>
           </div>
           <div class="matrix-block">
             <div class="matrix-head departure">
               Hourly departures (local)
-              <span class="hint">6 movements · sample</span>
+              <span class="hint">6 movements · sample · stacked by type</span>
             </div>
-            <div class="hour-grid">
-            <div class="hour-cell"><div class="h">00</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">01</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">02</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">03</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">04</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">05</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">06</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">07</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">08</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">09</div><div class="n">1</div></div>
-            <div class="hour-cell"><div class="h">10</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">11</div><div class="n">0</div></div>
-            <div class="hour-cell hot"><div class="h">12</div><div class="n">2</div></div>
-            <div class="hour-cell"><div class="h">13</div><div class="n">0</div></div>
-            <div class="hour-cell hot"><div class="h">14</div><div class="n">2</div></div>
-            <div class="hour-cell"><div class="h">15</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">16</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">17</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">18</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">19</div><div class="n">1</div></div>
-            <div class="hour-cell"><div class="h">20</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">21</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">22</div><div class="n">0</div></div>
-            <div class="hour-cell"><div class="h">23</div><div class="n">0</div></div>
+            <div class="mvp-hourly-stack">
+
+            <div class="stack-legend">
+            <span><i class="lg-heavy" aria-hidden="true"></i> Heavy jet</span>
+            <span><i class="lg-midsize" aria-hidden="true"></i> Super-midsize</span>
+            <span><i class="lg-light" aria-hidden="true"></i> Light / VLJ</span>
+            <span><i class="lg-turbo" aria-hidden="true"></i> Turboprop</span>
+            </div>
+            <div class="stack-chart-wrap">
+            <div class="stack-chart" role="group" aria-label="Departures per hour stacked by aircraft type">
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">00</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">01</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">02</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">03</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">04</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">05</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">06</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">07</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">08</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:60px" title="1 departure · airport local">
+            <div class="stack-seg light" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">09</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">10</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">11</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:120px" title="2 departures · airport local">
+            <div class="stack-seg heavy" style="flex:1"></div>
+            <div class="stack-seg midsize" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">12</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">13</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:120px" title="2 departures · airport local">
+            <div class="stack-seg light" style="flex:1"></div>
+            <div class="stack-seg heavy" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">14</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">15</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">16</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">17</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">18</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:60px" title="1 departure · airport local">
+            <div class="stack-seg midsize" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">19</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">20</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">21</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">22</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">23</div>
+            </div>
+            </div>
+            </div>
+            <p class="stack-caption">Peak hour (<strong>2</strong>) · sample mix.</p>
             </div>
           </div>
         </div>
       </section>
-
-
       <p class="footer-meta">
         Compression report MVP mockup · companion file: flightbridge-compression-report-mockup.html (full feature concept).
       </p>
