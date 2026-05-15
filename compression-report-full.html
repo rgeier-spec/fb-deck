@@ -266,6 +266,22 @@
     table.matrix .total-row td:first-child { background: #f4f6f9; }
     td.cell-strong { font-weight: 600; background: rgba(12,74,143,.06); }
 
+    /* Daily summary matrices — shared column widths so dates line up across arrivals / ramp / departures */
+    .matrix-stack table.matrix {
+      table-layout: fixed;
+      width: 100%;
+      min-width: 58rem;
+    }
+    .matrix-stack table.matrix col.mat-col-label {
+      width: 15rem;
+    }
+    .matrix-stack table.matrix col.mat-col-day {
+      width: 4.75rem;
+    }
+    .matrix-stack table.matrix col.mat-col-total {
+      width: 5.25rem;
+    }
+
     /* Drill-down */
     .drill-layout {
       display: grid;
@@ -781,6 +797,11 @@
           </div>
           <div class="table-scroll">
             <table class="matrix">
+              <colgroup>
+                <col class="mat-col-label" />
+                <col span="10" class="mat-col-day" />
+                <col class="mat-col-total" />
+              </colgroup>
               <thead>
                 <tr>
                   <th scope="col">Row</th>
@@ -811,6 +832,11 @@
           </div>
           <div class="table-scroll">
             <table class="matrix" aria-label="Estimated aircraft on ramp by local day">
+              <colgroup>
+                <col class="mat-col-label" />
+                <col span="10" class="mat-col-day" />
+                <col class="mat-col-total" />
+              </colgroup>
               <thead>
                 <tr>
                   <th scope="col">Row</th>
@@ -836,6 +862,11 @@
           </div>
           <div class="table-scroll">
             <table class="matrix">
+              <colgroup>
+                <col class="mat-col-label" />
+                <col span="10" class="mat-col-day" />
+                <col class="mat-col-total" />
+              </colgroup>
               <thead>
                 <tr>
                   <th scope="col">Row</th>
