@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MVP mockup · Reporting · Compression report — FlightBridge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --surface: #fff;
+      --border: #d8dee8;
+      --text: #1a2847;
+      --muted: #5c6b85;
+      --accent: #0c4a8f;
+      --accent-soft: #e8f0fa;
+      --arrival: #0d6b52;
+      --arrival-soft: #e6f5f0;
+      --departure: #a35c00;
+      --departure-soft: #fff4e8;
+      --radius: 8px;
+      --shadow: 0 1px 3px rgba(26, 40, 71, 0.08);
+      --font: "IBM Plex Sans", system-ui, sans-serif;
+      --mono: "IBM Plex Mono", ui-monospace, monospace;
+      --atype-heavy: #1e5aa8;
+      --atype-midsize: #2f8f9d;
+      --atype-light: #4a9d5c;
+      --atype-turbo: #8b5bb5;
+      --chart-axis: #c5ced9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.45;
+      min-height: 100vh;
+    }
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .global-nav {
+      background: linear-gradient(180deg, #0f3566 0%, #0c2d56 100%);
+      color: #fff;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 52px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.12);
+    }
+    .brand {
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-right: 24px;
+      opacity: .95;
+    }
+    .nav-item {
+      padding: 8px 14px;
+      border-radius: 6px;
+      color: rgba(255,255,255,.82);
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .nav-item:not(.active):hover { background: rgba(255,255,255,.08); cursor: pointer; }
+    .nav-item.active {
+      background: rgba(255,255,255,.14);
+      color: #fff;
+    }
+    main { flex: 1; padding: 24px 28px 40px; max-width: 1280px; margin: 0 auto; width: 100%; }
+    .breadcrumb {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .breadcrumb strong { color: var(--accent); font-weight: 600; }
+    .page-title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      margin-bottom: 4px;
+    }
+    .page-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .mvp-scope {
+      font-size: 13px;
+      color: var(--text);
+      background: var(--accent-soft);
+      border: 1px solid #c9dcee;
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 20px;
+    }
+    .mvp-scope strong { font-weight: 600; color: var(--accent); display: block; margin-bottom: 6px; }
+    .mvp-scope ul { margin: 0 0 0 1.1rem; padding: 0; color: var(--muted); }
+    .mvp-scope li { margin: 4px 0; }
+    .mvp-defer-strong { margin-top: 10px; display: block; color: var(--text); font-weight: 600; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+    .card-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px 24px;
+      max-width: 52rem;
+    }
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .field-hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin: 6px 0 0;
+      line-height: 1.35;
+      max-width: 36rem;
+    }
+    select, input[type="date"] {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: var(--font);
+      font-size: 13px;
+      background: #fafbfc;
+    }
+    select:disabled {
+      opacity: 0.92;
+      cursor: default;
+      background: #eef1f6;
+      color: var(--text);
+    }
+    .filter-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: flex-end;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--border);
+    }
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font);
+    }
+    .btn-secondary {
+      background: #eef1f6;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .meta-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 1.5rem;
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--muted);
+      margin-bottom: 16px;
+      padding: 10px 14px;
+      background: var(--accent-soft);
+      border-radius: var(--radius);
+      border: 1px solid #c9dcee;
+    }
+    .meta-strip span strong {
+      color: var(--text);
+      font-weight: 600;
+      margin-right: 0;
+    }
+    .matrix-stack { display: flex; flex-direction: column; gap: 18px; }
+    .matrix-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .matrix-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .matrix-head.arrival { background: var(--arrival-soft); border-bottom: 1px solid #bfe0d6; color: var(--arrival); }
+    .matrix-head.departure { background: var(--departure-soft); border-bottom: 1px solid #f0d9b8; color: var(--departure); }
+    .matrix-head span.hint {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--muted);
+    }
+    .table-scroll { overflow-x: auto; }
+    table.matrix {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+    table.matrix th, table.matrix td {
+      padding: 8px 10px;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    table.matrix th:first-child, table.matrix td:first-child {
+      text-align: left;
+      font-family: var(--mono);
+      font-size: 11px;
+      position: sticky;
+      left: 0;
+      background: var(--surface);
+      box-shadow: 2px 0 4px rgba(0,0,0,.04);
+      z-index: 1;
+    }
+    table.matrix thead th {
+      background: #f8f9fc;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    table.matrix tbody tr:hover td { background: #fafbfd; cursor: default; }
+    table.matrix .total-row td { font-weight: 700; background: #f4f6f9; border-top: 2px solid var(--border); }
+    table.matrix .total-row td:first-child { background: #f4f6f9; }
+    td.cell-strong { font-weight: 600; background: rgba(12,74,143,.06); }
+    .drill-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    @media (max-width: 960px) {
+      .drill-layout { grid-template-columns: 1fr; }
+    }
+    .drill-summary {
+      font-size: 13px;
+      color: var(--muted);
+      padding: 0 16px 12px;
+      margin-top: -4px;
+    }
+    .mvp-hourly-stack {
+      padding-bottom: 4px;
+    }
+
+    .stack-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      padding: 12px 16px 8px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .stack-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .stack-legend i {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .stack-legend .lg-heavy { background: var(--atype-heavy); }
+    .stack-legend .lg-midsize { background: var(--atype-midsize); }
+    .stack-legend .lg-light { background: var(--atype-light); }
+    .stack-legend .lg-turbo { background: var(--atype-turbo); }
+
+    .stack-chart-wrap {
+      padding: 8px 12px 0;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--chart-axis);
+      margin-bottom: 2px;
+    }
+    .stack-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      min-height: 132px;
+      padding: 0 8px 22px;
+      position: relative;
+      min-width: 672px;
+    }
+
+    .stack-caption {
+      font-size: 11px;
+      color: var(--muted);
+      padding: 0 16px 14px;
+      margin: 0;
+    }
+
+    .stack-col {
+      flex: 1 0 10px;
+      min-width: 10px;
+      max-width: 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .stack-bar {
+      width: 100%;
+      display: flex;
+      flex-direction: column-reverse;
+      justify-content: flex-start;
+      border-radius: 3px 3px 0 0;
+      overflow: hidden;
+      min-height: 2px;
+      box-shadow: inset 0 0 0 1px rgba(26, 40, 71, 0.06);
+    }
+    .stack-bar.is-empty {
+      min-height: 4px;
+      background: #e8ecf1;
+      box-shadow: none;
+    }
+    .stack-seg {
+      width: 100%;
+      min-height: 0;
+    }
+    .stack-seg.heavy { background: var(--atype-heavy); }
+    .stack-seg.midsize { background: var(--atype-midsize); }
+    .stack-seg.light { background: var(--atype-light); }
+    .stack-seg.turbo { background: var(--atype-turbo); }
+    .stack-hour-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.1;
+      width: 100%;
+    }
+
+    .drill-layout > .matrix-block {
+      overflow: visible;
+    }
+    .footer-meta {
+      margin-top: 24px;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      background: #e8ecf3;
+      color: var(--muted);
+      vertical-align: middle;
+      margin-left: 8px;
+    }
+    .badge.mvp { background: #e6f5f0; color: var(--arrival); border: 1px solid #bfe0d6; }
+    @media print {
+      .global-nav, .filter-actions, .mvp-scope, .footer-meta { display: none !important; }
+      body { background: #fff; }
+      .card, .matrix-block { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="global-nav" aria-label="Application navigation (conceptual mockup)">
+      <span class="brand">FlightBridge</span>
+      <span class="nav-item">Dashboard</span>
+      <span class="nav-item">Operations</span>
+      <span class="nav-item active">Reporting</span>
+      <span class="nav-item">Administration</span>
+    </header>
+
+    <main>
+      <div class="breadcrumb">
+        Reporting <span aria-hidden="true">›</span> <strong>Compression report</strong>
+      </div>
+      <h1 class="page-title">
+        Compression report
+        <span class="badge mvp">MVP mockup · v1</span>
+      </h1>
+      <p class="page-sub">
+        First-release slice: arrivals and departures by day, plus hourly demand as stacked bars (aircraft-category mix by hour) for a sample selected day.
+      </p>
+      <div class="mvp-scope" role="note">
+        <strong>What ships in v1 (this mockup)</strong>
+        <ul>
+          <li>Location + date range; always shows both arrivals and departures.</li>
+          <li>Daily totals matrix plus hourly stacked bar chart by aircraft category.</li>
+          <li>One export action (CSV)—PDF, saved views, and extra filters deferred.</li>
+        </ul>
+        <span class="mvp-defer-strong">Defer to later</span>
+        <ul>
+          <li>Movement / aircraft / leg-status / customer filters; optional hour grid layout.</li>
+          <li>Clickable matrix column drill UX (sample day stays static until then).</li>
+        </ul>
+      </div>
+
+      <section class="card" aria-labelledby="filters-heading">
+        <div class="card-title" id="filters-heading">Filters</div>
+        <div class="filter-grid">
+          <div class="field">
+            <label for="fbo-chain">FBO chain</label>
+            <select id="fbo-chain" disabled aria-label="FBO chain (assigned by FlightBridge)">
+              <option selected>Signature Aviation</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="location">Airport / location(s)</label>
+            <select id="location">
+              <option selected value="all">All my locations</option>
+              <option>KTEB — Signature Flight Support · South (Teterboro)</option>
+              <option>KPBI — Signature West Palm Beach</option>
+              <option>KAPA — Signature Centennial (Denver metro)</option>
+              <option>KSDL — Signature Scottsdale</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="from">From (local midnight)</label>
+            <input type="date" id="from" value="2026-05-13" />
+          </div>
+          <div class="field">
+            <label for="to">Through</label>
+            <input type="date" id="to" value="2026-06-03" />
+          </div>
+        </div>
+        <p class="field-hint" style="margin-top:12px">Additional filters listed in the full mockup (<code>flightbridge-compression-report-mockup.html</code>) are intentionally omitted for MVP.</p>
+        <div class="filter-actions">
+          <button type="button" class="btn btn-primary">Apply filters</button>
+          <button type="button" class="btn btn-secondary">Reset to defaults</button>
+          <button type="button" class="btn btn-secondary">Export CSV</button>
+        </div>
+      </section>
+
+      <div class="meta-strip" role="note">
+        <span><strong>Where</strong> · Signature · all stations · local time</span>
+        <span><strong>Period</strong> · Selected date range · counts per local calendar day</span>
+        <span><strong>As of</strong> · May 14, 2026 · snapshot</span>
+      </div>
+
+
+      <section class="matrix-stack" aria-label="Compression summary matrices">
+        <div class="matrix-block">
+          <div class="matrix-head arrival">
+            Arrivals by day
+            <span class="hint">v1 · daily arrivals · stacked hourly chart below</span>
+          </div>
+          <div class="table-scroll">
+            <table class="matrix">
+              <thead>
+                <tr>
+                  <th scope="col">Row</th>
+                  <th>05/21</th><th>05/22</th><th>05/23</th><th>05/24</th><th>05/25</th><th>05/26</th><th>05/27</th>
+                  <th>05/28</th><th>05/29</th><th>05/30</th><th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr title="sample row">
+                  <td>KTEB · Signature South</td>
+                  <td>8</td><td>49</td><td>46</td><td>25</td><td>21</td><td>11</td><td>11</td><td>8</td><td>18</td><td class="cell-strong">21</td>
+                  <td>218</td>
+                </tr>
+                <tr class="total-row">
+                  <td>Total arrivals</td>
+                  <td>8</td><td>49</td><td>46</td><td>25</td><td>21</td><td>11</td><td>11</td><td>8</td><td>18</td><td>21</td>
+                  <td>218</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="matrix-block">
+          <div class="matrix-head departure">
+            Departures by day
+            <span class="hint">v1 · daily departures · stacked hourly chart below</span>
+          </div>
+          <div class="table-scroll">
+            <table class="matrix">
+              <thead>
+                <tr>
+                  <th scope="col">Row</th>
+                  <th>05/21</th><th>05/22</th><th>05/23</th><th>05/24</th><th>05/25</th><th>05/26</th><th>05/27</th>
+                  <th>05/28</th><th>05/29</th><th>05/30</th><th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>KTEB · Signature South</td>
+                  <td>1</td><td>46</td><td>46</td><td>29</td><td>28</td><td>24</td><td>17</td><td>6</td><td>7</td><td class="cell-strong">6</td>
+                  <td>230</td>
+                </tr>
+                <tr class="total-row">
+                  <td>Total departures</td>
+                  <td>1</td><td>46</td><td>46</td><td>29</td><td>28</td><td>24</td><td>17</td><td>6</td><td>7</td><td>6</td>
+                  <td>230</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:22px" aria-labelledby="drill-heading">
+        <div class="card-title" id="drill-heading">Stacked hourly — sample day · May 30, 2026</div>
+        <p class="drill-summary">
+          Bars show movements per clock hour stacked by FB aircraft category—same totals as summing hourly segments by hand. MVP uses a fixed example until column drill selects the day dynamically.
+        </p>
+        <div class="drill-layout">
+          <div class="matrix-block">
+            <div class="matrix-head arrival">
+              Hourly arrivals (local)
+              <span class="hint">21 movements · sample · stacked by type</span>
+            </div>
+
+            <div class="mvp-hourly-stack">
+
+            <div class="stack-legend">
+            <span><i class="lg-heavy" aria-hidden="true"></i> Heavy jet</span>
+            <span><i class="lg-midsize" aria-hidden="true"></i> Super-midsize</span>
+            <span><i class="lg-light" aria-hidden="true"></i> Light / VLJ</span>
+            <span><i class="lg-turbo" aria-hidden="true"></i> Turboprop</span>
+            </div>
+            <div class="stack-chart-wrap">
+            <div class="stack-chart" role="group" aria-label="Arrivals per hour stacked by aircraft type">
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">00</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">01</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">02</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">03</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">04</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">05</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">06</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">07</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">08</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">09</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">10</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">11</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:90px" title="3 arrivals · airport local">
+            <div class="stack-seg light" style="flex:1"></div>
+            <div class="stack-seg midsize" style="flex:1"></div>
+            <div class="stack-seg heavy" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">12</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:120px" title="4 arrivals · airport local">
+            <div class="stack-seg light" style="flex:1"></div>
+            <div class="stack-seg midsize" style="flex:2"></div>
+            <div class="stack-seg heavy" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">13</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:120px" title="4 arrivals · airport local">
+            <div class="stack-seg light" style="flex:2"></div>
+            <div class="stack-seg heavy" style="flex:1"></div>
+            <div class="stack-seg heavy" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">14</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:90px" title="3 arrivals · airport local">
+            <div class="stack-seg turbo" style="flex:1"></div>
+            <div class="stack-seg heavy" style="flex:1"></div>
+            <div class="stack-seg light" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">15</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:90px" title="3 arrivals · airport local">
+            <div class="stack-seg heavy" style="flex:1"></div>
+            <div class="stack-seg midsize" style="flex:2"></div>
+            </div>
+            <div class="stack-hour-label">16</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:60px" title="2 arrivals · airport local">
+            <div class="stack-seg light" style="flex:1"></div>
+            <div class="stack-seg heavy" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">17</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:60px" title="2 arrivals · airport local">
+            <div class="stack-seg light" style="flex:1"></div>
+            <div class="stack-seg midsize" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">18</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">19</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">20</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">21</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">22</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">23</div>
+            </div>
+            </div>
+            </div>
+            <p class="stack-caption">Bar height = peak hour (<strong>4</strong>) · sample mix.</p>
+            </div>
+          </div>
+          <div class="matrix-block">
+            <div class="matrix-head departure">
+              Hourly departures (local)
+              <span class="hint">6 movements · sample · stacked by type</span>
+            </div>
+            <div class="mvp-hourly-stack">
+
+            <div class="stack-legend">
+            <span><i class="lg-heavy" aria-hidden="true"></i> Heavy jet</span>
+            <span><i class="lg-midsize" aria-hidden="true"></i> Super-midsize</span>
+            <span><i class="lg-light" aria-hidden="true"></i> Light / VLJ</span>
+            <span><i class="lg-turbo" aria-hidden="true"></i> Turboprop</span>
+            </div>
+            <div class="stack-chart-wrap">
+            <div class="stack-chart" role="group" aria-label="Departures per hour stacked by aircraft type">
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">00</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">01</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">02</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">03</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">04</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">05</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">06</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">07</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">08</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:60px" title="1 departure · airport local">
+            <div class="stack-seg light" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">09</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">10</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">11</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:120px" title="2 departures · airport local">
+            <div class="stack-seg heavy" style="flex:1"></div>
+            <div class="stack-seg midsize" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">12</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">13</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:120px" title="2 departures · airport local">
+            <div class="stack-seg light" style="flex:1"></div>
+            <div class="stack-seg heavy" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">14</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">15</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">16</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">17</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">18</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar" style="height:60px" title="1 departure · airport local">
+            <div class="stack-seg midsize" style="flex:1"></div>
+            </div>
+            <div class="stack-hour-label">19</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">20</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">21</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">22</div>
+            </div>
+            <div class="stack-col">
+            <div class="stack-bar is-empty"></div>
+            <div class="stack-hour-label">23</div>
+            </div>
+            </div>
+            </div>
+            <p class="stack-caption">Peak hour (<strong>2</strong>) · sample mix.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <p class="footer-meta">
+        Compression report MVP mockup · companion file: flightbridge-compression-report-mockup.html (full feature concept).
+      </p>
+    </main>
+  </div>
+</body>
+</html>
