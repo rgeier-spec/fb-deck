@@ -337,21 +337,21 @@
           <line x1="20" y1="130" x2="920" y2="130" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
 
           <!-- ===== STAKEHOLDER INPUT BOX (upstream of pile) ===== -->
-          <rect x="18" y="138" width="226" height="64" rx="8" fill="rgba(251,191,36,0.07)" stroke="rgba(251,191,36,0.35)" stroke-width="1.2"/>
-          <!-- People icon: 3 figures via g+transform (fill on each shape, not outer svg) -->
-          <g transform="translate(26,145)">
-            <ellipse cx="5" cy="5" rx="3.5" ry="3.8" fill="rgba(251,191,36,0.6)"/>
-            <path d="M-1,18 c0-3.5,2.8-6,6-6s6,2.5,6,6" fill="rgba(251,191,36,0.6)"/>
-            <ellipse cx="17" cy="4.5" rx="4.2" ry="4.5" fill="rgba(251,191,36,0.85)"/>
-            <path d="M10,18 c0-4,3.4-7,7-7s7,3,7,7" fill="rgba(251,191,36,0.85)"/>
-            <ellipse cx="29" cy="5" rx="3.5" ry="3.8" fill="rgba(251,191,36,0.6)"/>
-            <path d="M23,18 c0-3.5,2.8-6,6-6s6,2.5,6,6" fill="rgba(251,191,36,0.6)"/>
+          <rect x="18" y="136" width="226" height="68" rx="6" fill="rgba(251,191,36,0.06)" stroke="rgba(251,191,36,0.38)" stroke-width="1.2"/>
+          <!-- People icon: explicit fill on every shape so it renders correctly inside SVG -->
+          <g transform="translate(26,143) scale(0.82)">
+            <ellipse cx="8"  cy="7" rx="4"   ry="4.5" fill="rgba(251,191,36,0.55)"/>
+            <path d="M0 24c0-4.4 3.6-8 8-8s8 3.6 8 8"      fill="rgba(251,191,36,0.55)"/>
+            <ellipse cx="28" cy="7" rx="4"   ry="4.5" fill="rgba(251,191,36,0.55)"/>
+            <path d="M20 24c0-4.4 3.6-8 8-8s8 3.6 8 8"     fill="rgba(251,191,36,0.55)"/>
+            <ellipse cx="18" cy="6" rx="5"   ry="5.5" fill="rgba(251,191,36,0.9)"/>
+            <path d="M8 24c0-5 4.5-9 10-9s10 4 10 9"        fill="rgba(251,191,36,0.9)"/>
           </g>
-          <text x="70" y="157" style="font-family:Inter,sans-serif;font-size:11px;font-weight:700;fill:rgba(251,191,36,0.9);letter-spacing:0.08em;">STAKEHOLDERS</text>
-          <text x="26" y="173" style="font-family:Inter,sans-serif;font-size:10px;fill:rgba(203,213,225,0.65);">Surface issues &middot; Validate direction</text>
-          <text x="26" y="188" style="font-family:Inter,sans-serif;font-size:9.5px;fill:rgba(251,191,36,0.55);font-style:italic;">Sprint-cadence input to Sponsor</text>
+          <text x="60" y="156" style="font-family:Inter,sans-serif;font-size:11px;font-weight:700;fill:rgba(251,191,36,0.92);letter-spacing:0.08em;">STAKEHOLDERS</text>
+          <text x="26" y="172" style="font-family:Inter,sans-serif;font-size:10px;fill:rgba(203,213,225,0.68);">Surface issues &middot; Shape direction</text>
+          <text x="26" y="187" style="font-family:Inter,sans-serif;font-size:9.5px;fill:rgba(251,191,36,0.58);font-style:italic;">Sprint-cadence input to Sponsor</text>
           <!-- Downward arrow into pile -->
-          <line x1="131" y1="202" x2="131" y2="214" stroke="rgba(251,191,36,0.55)" stroke-width="1.5" marker-end="url(#gold-arrow)"/>
+          <line x1="131" y1="204" x2="131" y2="215" stroke="rgba(251,191,36,0.55)" stroke-width="1.5" marker-end="url(#gold-arrow)"/>
 
           <!-- ===== PILE of existing backlog (shifted down +68 from original) ===== -->
           <rect x="18" y="216" width="226" height="148" rx="8" fill="rgba(255,255,255,0.025)" stroke="rgba(148,163,184,0.14)" stroke-width="1" stroke-dasharray="4,3"/>
